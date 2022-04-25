@@ -1,0 +1,40 @@
+{
+  "name": "@eyevinn/safari-bitrate-monitor",
+  "version": "0.0.1",
+  "description": "",
+  "source": "index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "start": "parcel demo/index.html",
+    "build": "rm -rf ./dist && parcel build index.ts && tsc",
+    "prepare": "npm run build",
+    "postversion": "git push --no-verify && git push --tags --no-verify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Eyevinn/safari-bitrate-monitor.git"
+  },
+  "keywords": [],
+  "author": "erik.hoffman@eyevinn.se",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Eyevinn/safari-bitrate-monitor/issues"
+  },
+  "homepage": "https://github.com/Eyevinn/safari-bitrate-monitor#readme",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@parcel/packager-ts": "^2.3.2",
+    "@parcel/transformer-typescript-tsc": "^2.3.2",
+    "@parcel/transformer-typescript-types": "^2.2.1",
+    "@typescript-eslint/eslint-plugin": "^5.14.0",
+    "@typescript-eslint/parser": "^5.14.0",
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "parcel": "^2.3.2",
+    "prettier": "^2.5.1",
+    "typescript": "^4.6.2"
+  }
+}
