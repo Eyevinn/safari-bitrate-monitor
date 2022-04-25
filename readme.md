@@ -12,11 +12,14 @@ A small package to monitor buffering and dropped frames on the video element, re
   
   function handler = (qualityLevel) => {
     console.log(`bitrate changed –>`, qualityLevel);
-  };
-
-  const safariBitrateMonitor = new SafariBitrateMonitor(handler);
+  };  
   const src = ""; //HLS Manifest url
-  safariBitrateMonitor.load(videoElement, src);
+  
+  new SafariBitrateMonitor({
+    videoElement,
+    hlsManifestUrl: src,
+    handler
+  });
 ```
 
 ## Quality Object

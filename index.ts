@@ -20,19 +20,31 @@ const BITRATE_POLL_INTERVAL = 5 * 1000;
 
 export class SafariBitrateMonitor {
   private videoElement: HTMLVideoElement;
+  private handler: (qualityLevel: IQualityLevel) => void;
 
   private currentBitrate: number;
   private playlists: IHLSPlaylist[] = [];
   private bitrateInterval: number;
 
-  constructor(private handler: (data: IQualityLevel) => void) {}
-
-  async load(videoElement: HTMLVideoElement, hlsManifestUrl: string): Promise<void> {
+  constructor({
+    videoElement,
+    hlsManifestUrl,
+    handler,
+  }: {
+    videoElement: HTMLVideoElement;
+    hlsManifestUrl: string;
+    handler: (qualityLevel: IQualityLevel) => void;
+  }) {
     if (!videoElement || !hlsManifestUrl) {
       console.error("[SafariBitrateMonitor] Missing video element or manifest url");
       return;
     }
     this.videoElement = videoElement;
+    this.handler = handler;
+    this.init(hlsManifestUrl);
+  }
+
+  private async init(hlsManifestUrl: string): Promise<void> {
     this.playlists = await this.getPlaylists(hlsManifestUrl);
     if (this.playlists.length) {
       this.startBitratePoll();
