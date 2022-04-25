@@ -19,6 +19,8 @@ const HLS_ATTRIBUTE_REGEXP = new RegExp(
 const BITRATE_POLL_INTERVAL = 5 * 1000;
 
 export class SafariBitrateMonitor {
+  private bitratePollInterval: number = BITRATE_POLL_INTERVAL;
+
   private videoElement: HTMLVideoElement;
   private handler: (qualityLevel: IQualityLevel) => void;
 
@@ -30,17 +32,24 @@ export class SafariBitrateMonitor {
     videoElement,
     hlsManifestUrl,
     handler,
+    bitratePollInterval,
   }: {
     videoElement: HTMLVideoElement;
     hlsManifestUrl: string;
     handler: (qualityLevel: IQualityLevel) => void;
+    bitratePollInterval?: number;
   }) {
     if (!videoElement || !hlsManifestUrl) {
-      console.error("[SafariBitrateMonitor] Missing video element or manifest url");
+      console.error(
+        "[SafariBitrateMonitor] Missing video element or manifest url"
+      );
       return;
     }
     this.videoElement = videoElement;
     this.handler = handler;
+    if (bitratePollInterval) {
+      this.bitratePollInterval = bitratePollInterval;
+    }
     this.init(hlsManifestUrl);
   }
 
@@ -111,7 +120,7 @@ export class SafariBitrateMonitor {
           height: playlist.height,
         });
       }
-    }, BITRATE_POLL_INTERVAL);
+    }, this.bitratePollInterval);
   }
 
   public destroy() {

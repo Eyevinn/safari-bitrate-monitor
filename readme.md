@@ -19,6 +19,7 @@ Simple approach to monitor bitrate changes in Safari, on the native video elemen
     videoElement,
     hlsManifestUrl: src,
     handler
+    bitratePollInterval: 2 * 1000 // Optional. Check every other second
   });
 ```
 
