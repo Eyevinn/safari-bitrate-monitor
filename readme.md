@@ -1,7 +1,7 @@
 Safari Bitrate Monitor
 ===
 
-A small package to monitor buffering and dropped frames on the video element, reporting it back as state updates into a sent in callback.
+Simple approach to monitor bitrate changes in Safari, on the native video element
 
 ## Simple Usage
 
