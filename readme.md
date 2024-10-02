@@ -1,5 +1,4 @@
-Safari Bitrate Monitor
-===
+# Safari Bitrate Monitor
 
 Simple approach to monitor bitrate changes in Safari, on the native video element
 
@@ -9,12 +8,12 @@ Simple approach to monitor bitrate changes in Safari, on the native video elemen
   import { SafariBitrateMonitor } from "@eyevinn/safari-bitrate-monitor";
 
   const videoElement = document.querySelector("video");
-  
+
   function handler = (qualityLevel) => {
     console.log(`bitrate changed –>`, qualityLevel);
-  };  
+  };
   const src = ""; //HLS Manifest url
-  
+
   new SafariBitrateMonitor({
     videoElement,
     hlsManifestUrl: src,
