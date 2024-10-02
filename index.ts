@@ -2,13 +2,13 @@ export interface IQualityLevel {
   bitrate: number;
   width: number;
   height: number;
+  fps: number;
+  audioCodec: string;
+  videoCodec: string;
 }
 
-export interface IHLSPlaylist {
+export interface IHLSPlaylist extends IQualityLevel {
   url: string;
-  width: number;
-  height: number;
-  bitrate: number;
 }
 
 const HLS_ATTRIBUTE_REGEXP = new RegExp(
@@ -75,6 +75,9 @@ export class SafariBitrateMonitor {
         width: 0,
         height: 0,
         bitrate: 0,
+        fps: 0,
+        audioCodec: "",
+        videoCodec: "",
       };
       if (line.includes("#EXT-X-STREAM-INF")) {
         let valid = false;
@@ -93,6 +96,15 @@ export class SafariBitrateMonitor {
               playlist.height = Number(height);
               break;
             }
+            case "CODECS": {
+              const [video, audio] = value.replaceAll('"', "").split(",");
+              playlist.audioCodec = audio;
+              playlist.videoCodec = video;
+              break;
+            }
+            case "FRAME-RATE":
+              playlist.fps = Number(value);
+              break;
           }
         }
         if (valid) {
@@ -118,6 +130,9 @@ export class SafariBitrateMonitor {
           bitrate: playlist.bitrate,
           width: playlist.width,
           height: playlist.height,
+          videoCodec: playlist.videoCodec,
+          audioCodec: playlist.audioCodec,
+          fps: playlist.fps,
         });
       }
     }, this.bitratePollInterval);
