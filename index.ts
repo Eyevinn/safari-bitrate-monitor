@@ -170,7 +170,6 @@ export class SafariBitrateMonitor {
         }
       }
     });
-    console.log("play", playlists);
     return playlists;
   }
 
