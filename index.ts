@@ -16,6 +16,56 @@ const HLS_ATTRIBUTE_REGEXP = new RegExp(
   "g"
 );
 
+const guessCodec = (
+  codecs: string[]
+): { audio?: string; video: string } | undefined => {
+  if (codecs.length === 1) {
+    return {
+      audio: undefined,
+      video: codecs[0],
+    };
+  }
+
+  if (codecs.length >= 2) {
+    // Guess based on some of the most common codecs. There is no
+    // way to be 100% certain which codec belongs to which track
+    // in the HLS standard.
+    const firstIsProbablyVideo = codecs[0].includes("avc");
+    const secondIsProbablyVideo = codecs[1].includes("avc");
+
+    const firstIsProbablyAudio = codecs[0].includes("mp4a");
+    const secondIsProbablyAudio = codecs[1].includes("mp4a");
+
+    if (firstIsProbablyVideo) {
+      return {
+        video: codecs[0],
+        audio: codecs[1],
+      };
+    }
+
+    if (secondIsProbablyVideo) {
+      return {
+        video: codecs[1],
+        audio: codecs[0],
+      };
+    }
+
+    if (firstIsProbablyAudio) {
+      return {
+        video: codecs[1],
+        audio: codecs[0],
+      };
+    }
+
+    if (secondIsProbablyAudio) {
+      return {
+        video: codecs[0],
+        audio: codecs[1],
+      };
+    }
+  }
+};
+
 const BITRATE_POLL_INTERVAL = 5 * 1000;
 
 export class SafariBitrateMonitor {
@@ -99,40 +149,11 @@ export class SafariBitrateMonitor {
             case "CODECS": {
               const codecs = value.replace(/"/g, "").split(",");
 
-              if (codecs.length === 1) {
-                playlist.videoCodec = codecs[0];
-              }
+              const avCodecs = guessCodec(codecs);
 
-              if (codecs.length >= 2) {
-                // Guess based on some of the most common codecs. There is no
-                // way to be 100% certain which codec belongs to which track
-                // in the HLS standard.
-                const firstIsProbablyVideo = codecs[0].includes("avc");
-                const secondIsProbablyVideo = codecs[1].includes("avc");
+              playlist.videoCodec = avCodecs.video;
+              playlist.audioCodec = avCodecs.audio;
 
-                const firstIsProbablyAudio = codecs[0].includes("mp4");
-                const secondIsProbablyAudio = codecs[1].includes("mp4");
-
-                if (firstIsProbablyVideo) {
-                  playlist.videoCodec = codecs[0];
-                  playlist.audioCodec = codecs[1];
-                }
-
-                if (secondIsProbablyVideo) {
-                  playlist.videoCodec = codecs[1];
-                  playlist.audioCodec = codecs[0];
-                }
-
-                if (firstIsProbablyAudio) {
-                  playlist.videoCodec = codecs[1];
-                  playlist.audioCodec = codecs[0];
-                }
-
-                if (secondIsProbablyAudio) {
-                  playlist.videoCodec = codecs[0];
-                  playlist.audioCodec = codecs[1];
-                }
-              }
               break;
             }
             case "FRAME-RATE":
@@ -149,7 +170,7 @@ export class SafariBitrateMonitor {
         }
       }
     });
-    console.log("play", playlists)
+    console.log("play", playlists);
     return playlists;
   }
 
