@@ -97,7 +97,7 @@ export class SafariBitrateMonitor {
               break;
             }
             case "CODECS": {
-              const codecs = value.replaceAll('"', "").split(",");
+              const codecs = value.replace(/"/g, "").split(",");
 
               if (codecs.length === 1) {
                 playlist.videoCodec = codecs[0];
@@ -149,6 +149,7 @@ export class SafariBitrateMonitor {
         }
       }
     });
+    console.log("play", playlists)
     return playlists;
   }
 
