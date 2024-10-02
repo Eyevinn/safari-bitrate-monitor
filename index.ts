@@ -97,13 +97,50 @@ export class SafariBitrateMonitor {
               break;
             }
             case "CODECS": {
-              const [video, audio] = value.replaceAll('"', "").split(",");
-              playlist.audioCodec = audio;
-              playlist.videoCodec = video;
+              const codecs = value.replaceAll('"', "").split(",");
+
+              if (codecs.length === 1) {
+                playlist.videoCodec = codecs[0];
+              }
+
+              if (codecs.length >= 2) {
+                // Guess based on some of the most common codecs. There is no
+                // way to be 100% certain which codec belongs to which track
+                // in the HLS standard.
+                const firstIsProbablyVideo = codecs[0].includes("avc");
+                const secondIsProbablyVideo = codecs[1].includes("avc");
+
+                const firstIsProbablyAudio = codecs[0].includes("mp4");
+                const secondIsProbablyAudio = codecs[1].includes("mp4");
+
+                if (firstIsProbablyVideo) {
+                  playlist.videoCodec = codecs[0];
+                  playlist.audioCodec = codecs[1];
+                }
+
+                if (secondIsProbablyVideo) {
+                  playlist.videoCodec = codecs[1];
+                  playlist.audioCodec = codecs[0];
+                }
+
+                if (firstIsProbablyAudio) {
+                  playlist.videoCodec = codecs[1];
+                  playlist.audioCodec = codecs[0];
+                }
+
+                if (secondIsProbablyAudio) {
+                  playlist.videoCodec = codecs[0];
+                  playlist.audioCodec = codecs[1];
+                }
+              }
               break;
             }
             case "FRAME-RATE":
-              playlist.fps = Number(value);
+              if (value) {
+                playlist.fps = Number(value);
+              }
+              break;
+            default:
               break;
           }
         }
