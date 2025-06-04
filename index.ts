@@ -78,16 +78,20 @@ export class SafariBitrateMonitor {
   private playlists: IHLSPlaylist[] = [];
   private bitrateInterval: number;
 
+  private requestCredentials?: RequestCredentials;
+
   constructor({
     videoElement,
     hlsManifestUrl,
     handler,
     bitratePollInterval,
+    requestCredentials,
   }: {
     videoElement: HTMLVideoElement;
     hlsManifestUrl: string;
     handler: (qualityLevel: IQualityLevel) => void;
     bitratePollInterval?: number;
+    requestCredentials?: RequestCredentials;
   }) {
     if (!videoElement || !hlsManifestUrl) {
       console.error(
@@ -95,6 +99,8 @@ export class SafariBitrateMonitor {
       );
       return;
     }
+    this.requestCredentials = requestCredentials;
+
     this.videoElement = videoElement;
     this.handler = handler;
     if (bitratePollInterval) {
@@ -111,7 +117,9 @@ export class SafariBitrateMonitor {
   }
 
   private async getPlaylists(src: string): Promise<IHLSPlaylist[]> {
-    const response = await fetch(src);
+    const response = await fetch(src, {
+      credentials: this.requestCredentials,
+    });
     if (!response.ok) {
       return [];
     }
